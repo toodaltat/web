@@ -6,4 +6,5 @@ urlpatterns = [
 	path('', views.home, name='home'),
 	path('create/', views.home, name='home'),
 	path('<int:id>', views.index, name='index'),
+	path('accounts/password_reset/', views.home, name='home')
 ]
