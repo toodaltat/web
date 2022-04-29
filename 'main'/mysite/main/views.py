@@ -5,30 +5,36 @@ from .forms import CreateNewList
 # Create your views here.
 def index(response, id):
 	ls = ToDoList.objects.get(id=id)
+
+	if ls in response.user.todolist.all():
 	
-	if response.method == "POST":
-		if response.POST.get("save"):
-			for item in ls.item_set.all():
-				if response.POST.get("c" + str(item.id)) == "clicked":
-					item.complete = True
-				else:
-					item.complete = False
+		if response.method == "POST":
+			if response.POST.get("save"):
+				for item in ls.item_set.all():
+					if response.POST.get("c" + str(item.id)) == "clicked":
+						item.complete = True
+					else:
+						item.complete = False
 				
-				item.save()
+					item.save()
 
-		elif response.POST.get("nemItem"):
-			txt = response.POST.get("new")
+			elif response.POST.get("nemItem"):
+				txt = response.POST.get("new")
 
-		if len(txt) > 2:
-			ls.item_set.create(text=txt, complete=False)
-		else:
-			print("invaild")						
+				if len(txt) > 2:
+					ls.item_set.create(text=txt, complete=False)
+				else:
+					print("invaild")						
 
-	return render(response, "'main'/home.html", {"ls":ls})
+		return render(response, "'main'/home.html", {"ls":ls})
+	return render(response, "'main'/home.html", {})
+
 
 def home(response):
 	return render(response, "'main'/home.html", {"name": "E"})
 
+def view(response):	
+	return render(response, "'main'/view.html", {})
 
 def create(response):
 	response.user
@@ -39,6 +45,7 @@ def create(response):
 			n = form.cleaned_data["name"]
 			t = ToDoList(name=n)
 			t.save()
+			response.user.todolist.add(t)
 
 		return HttpResponseRedirect("/%i" %t.id)
 	else:
